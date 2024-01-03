@@ -3,7 +3,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "WindowCmdShifter"
-obj.version = "1.0"
+obj.version = "1.1"
 obj.author = "Brent Atkinson <brent.atkinson@brent.atkinson@gmail.com>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 
