@@ -117,16 +117,19 @@ local function nextFrame(window, direction)
     return available[nextPos]
 end
 
-local function moveWindow(window, direction)
-    local nf = nextFrame(window, direction)
+local function setWindowPosition(window, pos) 
     local f = window:frame()
-    if nf then
-        f.x = nf.x
-        f.y = nf.y
-        f.w = nf.w
-        f.h = nf.h
-        window:setFrame(nf)
+    if f then
+        f.x = pos.x
+        f.y = pos.y
+        f.w = pos.w
+        f.h = pos.h
+        window:setFrame(f)
     end
+end
+
+local function moveWindow(window, direction)
+    setWindowPosition(window, nextFrame(window, direction))
 end
 
 local function moveFocusedWindow(direction)
@@ -149,11 +152,44 @@ local function shiftRight()
     moveFocusedWindow(Directions.RIGHT)
 end
 
+local function moveScreen(nextFn)
+   local window = hs.window.focusedWindow()
+   local currentScreen = window:screen()
+   local available = screenPositions(currentScreen)
+   local currentPos = windowPosition(window, available)
+   local nextScreen = nextFn(currentScreen)
+   if nextScreen then
+      local availableOnNext = screenPositions(nextScreen)
+      local nextFrame = availableOnNext[currentPos]
+      setWindowPosition(window, nextFrame)
+   end
+end
+
+local function screenRight()
+   moveScreen(function(s) return s:toEast() end)
+end
+
+local function screenLeft()
+   moveScreen(function(s) return s:toWest() end)
+end
+
+local function screenUp()
+   moveScreen(function(s) return s:toNorth() end)
+end
+
+local function screenDown()
+   moveScreen(function(s) return s:toSouth() end)
+end
+
 local Binds = {
    up = shiftUp,
    left = shiftLeft,
    down = shiftDown,
-   right = shiftRight
+   right = shiftRight,
+   screenRight = screenRight,
+   screenLeft = screenLeft,
+   screenUp = screenUp,
+   screenDown = screenDown
 }
 
 --- WindowCmdShifter:bindHotkeys(mapping)
