@@ -128,6 +128,12 @@ local function setWindowPosition(window, pos)
     end
 end
 
+local function getWindowPosition(window)
+    local currentScreen = window:screen()
+    local available = screenPositions(currentScreen)
+    return windowPosition(window, available)
+end
+
 local function moveWindow(window, direction)
     setWindowPosition(window, nextFrame(window, direction))
 end
@@ -152,33 +158,62 @@ local function shiftRight()
     moveFocusedWindow(Directions.RIGHT)
 end
 
-local function moveScreen(nextFn)
+local function screenForDirection(screen, direction)
+    if direction == Directions.UP then
+        return screen:toNorth()
+    elseif direction == Directions.LEFT then
+        return screen:toWest()
+    elseif direction == Directions.DOWN then
+        return screen:toSouth()
+    elseif direction == Directions.RIGHT then
+        return screen:toEast()
+    end
+end
+
+local function unanchoredScreenMove(window, direction)
+    if direction == Directions.UP then
+        return window:moveOneScreenNorth()
+    elseif direction == Directions.LEFT then
+        return window:moveOneScreenWest()
+    elseif direction == Directions.DOWN then
+        return window:moveOneScreenSouth()
+    elseif direction == Directions.RIGHT then
+        return window:moveOneScreenEast()
+    end
+end
+
+local function anchoredScreenMove(window, position, direction)
+    local currentScreen = window:screen()
+    local nextScreen = screenForDirection(currentScreen, direction)
+    local availableOnNext = screenPositions(nextScreen)
+    local nextFrame = availableOnNext[position]
+    setWindowPosition(window, nextFrame)
+end
+
+local function moveScreen(direction)
    local window = hs.window.focusedWindow()
-   local currentScreen = window:screen()
-   local available = screenPositions(currentScreen)
-   local currentPos = windowPosition(window, available)
-   local nextScreen = nextFn(currentScreen)
-   if nextScreen then
-      local availableOnNext = screenPositions(nextScreen)
-      local nextFrame = availableOnNext[currentPos]
-      setWindowPosition(window, nextFrame)
+   local currentPos = getWindowPosition(window)
+   if currentPos then
+      anchoredScreenMove(window, currentPos, direction)
+   else
+      unanchoredScreenMove(window, direction)
    end
 end
 
 local function screenRight()
-   moveScreen(function(s) return s:toEast() end)
+   moveScreen(Directions.RIGHT)
 end
 
 local function screenLeft()
-   moveScreen(function(s) return s:toWest() end)
+   moveScreen(Directions.LEFT)
 end
 
 local function screenUp()
-   moveScreen(function(s) return s:toNorth() end)
+   moveScreen(Directions.UP)
 end
 
 local function screenDown()
-   moveScreen(function(s) return s:toSouth() end)
+   moveScreen(Directions.DOWN)
 end
 
 local Binds = {
