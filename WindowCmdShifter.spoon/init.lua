@@ -229,7 +229,7 @@ local Binds = {
 
 --- WindowCmdShifter:bindHotkeys(mapping)
 --- Method
---- Binds hotkeys for WindowShifter
+--- Binds hotkeys for WindowCmdShifter
 ---
 --- Parameters:
 ---  * mapping - A table containing hotkey objifier/key details for the following items:
