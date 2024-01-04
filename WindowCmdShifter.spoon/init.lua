@@ -35,9 +35,9 @@ local Transitions = {
     },
     TOP = {
         UP = Positions.FULL,
-        LEFT = Positions.LEFT,
+        LEFT = Positions.TOPLEFT,
         DOWN = Positions.BOTTOM,
-        RIGHT = Positions.RIGHT
+        RIGHT = Positions.TOPRIGHT
     },
     LEFT = {
         UP = Positions.TOPLEFT,
